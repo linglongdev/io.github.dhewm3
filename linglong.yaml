@@ -1,0 +1,65 @@
+version: "1"
+
+package:
+  id: io.github.dhewm3
+  name: dhewm3
+  version: 1.5.4.0
+  kind: app
+  description: |
+    dhewm 3 main repository
+
+base: org.deepin.foundation/23.0.0
+runtime: org.deepin.Runtime/23.0.1
+
+command:
+  - /opt/apps/io.github.dhewm3/files/bin/dhewm3
+
+sources:
+  - kind: git
+    url: https://github.com/dhewm/dhewm3.git
+    version: master
+    commit: be2b788c6719dff953ce816a1246c49bd5cd30a5
+
+  - kind: git
+    url: https://github.com/libsdl-org/SDL.git
+    version: master
+    commit: 5ecbc00f367b4ac420fadf569e2d33325a7c2413
+
+  - kind: file
+    url: https://files.holarse-linuxgaming.de/native/Spiele/Doom%203/Demo/doom3-linux-1.1.1286-demo.x86.run
+    digest: b42260fd08feb13c2f035a3746f8c1e3472151f0f781b8a2d1da231dae818083
+
+  - kind: file
+    url: https://community-packages.deepin.com/beige/pool/main/o/openal-soft/libopenal1_1.19.1-2_amd64.deb
+    digest: 6519188f969234cbdc9e3cb8346d86339b1f766db083e2519cfdc68b917e00ae
+
+  - kind: file
+    url: https://community-packages.deepin.com/beige/pool/main/o/openal-soft/libopenal-dev_1.19.1-2_amd64.deb
+    digest: 901d42e8dbfaf00638d283b9d55f54e6fce34e1e6272e97cb5ff829e55a30a4b
+
+  - kind: file
+    url: https://community-packages.deepin.com/beige/pool/main/s/sndio/libsndio7.0_1.5.0-3_amd64.deb
+    digest: aed22e5c4d4734dd70ea33993c33816409d15c1e6355d376abbd7ffccde29adc
+
+build: |
+  echo "" > $PREFIX/packages.list
+  bash ./install_dep linglong/sources "$PREFIX"
+  sh /project/linglong/sources/doom3-linux-1.1.1286-demo.x86.run --tar xf demo/
+  
+  cd /project/linglong/sources/SDL.git/
+  cmake -Bbuild \
+        -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+        -DCMAKE_INSTALL_LIBDIR=${PREFIX}/lib/${TRIPLET}
+  cmake --build build
+  cmake --build build --target install
+  
+  cd /project/linglong/sources/dhewm3.git/neo/
+  git apply /project/patches/0001-add-install-path.patch
+  cmake -Bbuild \
+        -DCMAKE_INSTALL_PREFIX=${PREFIX} \
+        -DOPENAL_INCLUDE_DIR=${PREFIX}/include \
+        -DREPRODUCIBLE_BUILD=ON
+  
+  cmake --build build
+  cmake --build build --target install
+  cp /project/demo/demo00.pk4 ${PREFIX}/share/dhewm3/base
