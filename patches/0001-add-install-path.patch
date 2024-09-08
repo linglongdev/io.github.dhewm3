@@ -1,0 +1,32 @@
+From 437efb74c682d907110643113dee24eba642ca26 Mon Sep 17 00:00:00 2001
+From: Shenyufan <751890223@qq.com>
+Date: Mon, 12 Aug 2024 19:28:58 +0800
+Subject: [PATCH] add-install-path
+
+---
+ neo/CMakeLists.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/neo/CMakeLists.txt b/neo/CMakeLists.txt
+index 8e14329..0a63484 100644
+--- a/neo/CMakeLists.txt
++++ b/neo/CMakeLists.txt
+@@ -1299,6 +1299,7 @@ endif()
+ 				LIBRARY DESTINATION "${libdir}"
+ 				ARCHIVE DESTINATION "${libdir}"
+ 		)
++		
+ 	endif()
+ endif()
+ 
+@@ -1359,3 +1360,6 @@ if(D3XP AND NOT HARDLINK_GAME)
+ 		)
+ 	endif()
+ endif()
++
++install(DIRECTORY ${CMAKE_SOURCE_DIR}/../base DESTINATION ${CMAKE_INSTALL_PREFIX}/share/dhewm3)
++install(DIRECTORY ${CMAKE_SOURCE_DIR}/../dist/linux/share DESTINATION ${CMAKE_INSTALL_PREFIX})
+\ No newline at end of file
+-- 
+2.43.4
+
